@@ -7,11 +7,10 @@ gather
 - can't cancel other tasks if one throws an exception
 
 as_completed
-- returns an iterator that yields futures as they complete
 - no deterministic order of results, whatever finishes first is returned first
 - can't figure out which tasks are running and cancel them when there are errors 
 
 
 wait
 - doesn't throw exception
-- 
+- can execute logic when all tasks are done, one task is done, or when one exception is met
