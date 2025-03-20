@@ -4,7 +4,7 @@ from chapter04 import fetch_status
 from util import async_timed
 
 
-@async_timed()
+@async_timed
 async def main():
     async with ClientSession() as session:
         urls = ['https://www.google.com', 'invalid_url']

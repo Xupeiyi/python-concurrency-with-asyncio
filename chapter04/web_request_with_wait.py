@@ -4,7 +4,7 @@ from util import async_timed
 from chapter04 import fetch_status
 
 
-@async_timed()
+@async_timed
 async def main():
     async with ClientSession() as session:
         fetchers = [
