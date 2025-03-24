@@ -3,10 +3,7 @@ import asyncio
 from random import sample
 import asyncpg
 
-
-def load_common_words() -> list[str]:
-    with open('common_words.txt') as f:
-        return f.readlines()
+from chapter05 import load_common_words
 
 
 def generate_brand_names(words: list[str]) -> list[tuple[str]]:
