@@ -92,4 +92,4 @@ async def main(partition_size: int):
 
 
 if __name__ == "__main__":
-    asyncio.run(main(partition_size=60000))
+    asyncio.run(main(partition_size=300000))
