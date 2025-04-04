@@ -49,8 +49,12 @@ async def main(partition_size: int):
         start = time.time()
 
         with concurrent.futures.ProcessPoolExecutor() as executor:
-            calls = [functools.partial(map_frequencies, chunk) for chunk in partition(contents, partition_size)]
-            coros = [loop.run_in_executor(executor, call) for call in calls]
+            coros = [
+                loop.run_in_executor(
+                    executor, functools.partial(map_frequencies, chunk)
+                )
+                for chunk in partition(contents, partition_size)
+            ]
 
             intermediate_results = await asyncio.gather(*coros)
             # final_result = functools.reduce(merge_dictionaries, intermediate_results)
@@ -63,4 +67,4 @@ async def main(partition_size: int):
 
 
 if __name__ == "__main__":
-    asyncio.run(main(partition_size=620000))
+    asyncio.run(main(partition_size=60000))
