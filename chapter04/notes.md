@@ -15,4 +15,4 @@ wait
 - can execute logic when all tasks are done, one task is done, or when one exception is met
 - need to explicitly cancel pending tasks when timeout is reached 
 - It's better pass in a list of tasks instead of coroutines, otherwise we cannot see 
-  if the tasks returned by wait are wrapped from which coroutines
+  the tasks returned by wait are wrapped from which coroutines

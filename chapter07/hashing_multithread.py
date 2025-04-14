@@ -25,9 +25,9 @@ def hash(password: bytes) -> str:
 @async_timed
 async def main():
     loop = asyncio.get_running_loop()
-    tasks = []
 
     with ThreadPoolExecutor() as pool:
+        tasks = []
         for password in passwords:
             tasks.append(
                 loop.run_in_executor(
@@ -36,7 +36,7 @@ async def main():
                 )
             )
 
-    await asyncio.gather(*tasks)
+        await asyncio.gather(*tasks)
 
 
 asyncio.run(main())
