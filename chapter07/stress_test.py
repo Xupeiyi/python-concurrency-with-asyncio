@@ -18,7 +18,7 @@ class StressTest:
         self._url = url
         self._total_requests = total_requests
         self._callback = callback  # need to be thread safe
-        self._refresh_rate = total_requests // 100
+        self._refresh_rate = 10
 
     def start(self):
         future = asyncio.run_coroutine_threadsafe(self._make_requests(), self._loop)
@@ -36,10 +36,8 @@ class StressTest:
 
         self._completed_requests = self._completed_requests + 1
 
-        if (
-            self._completed_requests % self._refresh_rate == 0
-            or self._completed_requests == self._total_requests
-        ):
+        if (self._completed_requests % self._refresh_rate == 0
+                or self._completed_requests == self._total_requests):
             self._callback(self._completed_requests, self._total_requests)
 
     async def _make_requests(self):

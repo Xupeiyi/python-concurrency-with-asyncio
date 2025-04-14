@@ -36,15 +36,15 @@ class LoadTester(Tk):
         self._pb_label = Label(self, text="Progress:")
         self._pb_label.grid(column=0, row=3)
 
-        self._pb = ttk.Progressbar(self, orient="horizontal", length=200, mode="determinate")
+        self._pb = ttk.Progressbar(self, orient="horizontal", length=150, mode="determinate", maximum=100)
         self._pb.grid(column=1, row=3, columnspan=2)
 
     def _update_bar(self, pct: int):
+        self._pb["value"] = pct
         if pct == 100:
             self._load_test = None
             self._submit["text"] = "Submit"
         else:
-            self._pb["value"] = pct
             self.after(self._refresh_ms, self._poll_queue)
 
     def _queue_update(self, complete_requests: int, total_requests: int):
