@@ -8,6 +8,7 @@ async def make_request(host: str, port: int, loop: AbstractEventLoop) -> str:
     def protocol_factory():
         return HTTPGetClientProtocol(host, loop)
 
+    # create a socket connection to a given host and wrap it in an appropriate transport
     transport, protocol = await loop.create_connection(protocol_factory, host=host, port=port)
     return await protocol.get_response()
 
