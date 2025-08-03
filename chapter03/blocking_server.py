@@ -1,25 +1,25 @@
 import socket
 
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+listening_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 address = ("127.0.0.1", 8000)
-server_socket.bind(address)
-server_socket.listen()
+listening_socket.bind(address)
+listening_socket.listen()
 
 connections = []
 
 try:
     while True:
-        connection, client_address = server_socket.accept()
+        connected_socket, client_address = listening_socket.accept()
         print(f'I got a connection from {client_address}!')
-        connections.append(connection)
+        connections.append(connected_socket)
 
-        for connection in connections:
+        for connected_socket in connections:
             buffer = b''
 
             while buffer[-2:] != b'\r\n':
-                data = connection.recv(2)
+                data = connected_socket.recv(2)
                 if not data:
                     break
                 else:
@@ -27,7 +27,7 @@ try:
                     buffer = buffer + data
             
             print(f"All the data is: {buffer}")
-            connection.sendall(f"response from server: {buffer}".encode())
+            connected_socket.sendall(f"response from server: {buffer}".encode())
 finally:
-    server_socket.close()
+    listening_socket.close()
 
