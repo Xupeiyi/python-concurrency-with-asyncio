@@ -4,15 +4,15 @@ from selectors import SelectorKey
 
 selector = selectors.DefaultSelector()
 
-server_socket = socket.socket()
-server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+listening_socket = socket.socket()
+listening_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 server_address = ("127.0.0.1", 8000)
-server_socket.setblocking(False)
-server_socket.bind(server_address)
-server_socket.listen()
+listening_socket.setblocking(False)
+listening_socket.bind(server_address)
+listening_socket.listen()
 
-selector.register(server_socket, selectors.EVENT_READ)
+selector.register(listening_socket, selectors.EVENT_READ)
 
 while True:
     events: list[tuple[SelectorKey, int]] = selector.select(timeout=1)
@@ -23,11 +23,14 @@ while True:
     for event, _ in events:
         event_socket = event.fileobj
 
-        if event_socket == server_socket:
-            connection, address = server_socket.accept()
+        # event_socket is the listening socket
+        if event_socket == listening_socket:
+            connection, address = listening_socket.accept()
             connection.setblocking(False)
             print(f'I got a connection from {address}!')
             selector.register(connection, selectors.EVENT_READ)
+
+        # event_socket is a connected socket
         else:
             data = event_socket.recv(1024)
             print(f"I got some data: {data}")
