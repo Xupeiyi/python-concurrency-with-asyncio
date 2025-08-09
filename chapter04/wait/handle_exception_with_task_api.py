@@ -16,17 +16,18 @@ async def main():
             asyncio.create_task(bad_request)
         ])
 
-        print(f'Done task count: {len(done)}')
-        print(f'Pending task count: {len(pending)}')
+    print(f'Done task count: {len(done)}')
+    print(f'Pending task count: {len(pending)}')
 
-        for done_task in done:
-            if done_task.exception() is None:
-                print(done_task.result())
-            else:
-                logging.error(
-                    "Request got an exception",
-                    exc_info=done_task.exception()
-                )
+    for done_task in done:
+        if done_task.exception() is None:
+            print(done_task.result())
+        else:
+            logging.error(
+                "Request got an exception",
+                exc_info=done_task.exception()
+            )
 
 
-asyncio.run(main())
+if __name__ == '__main__':
+    asyncio.run(main())
