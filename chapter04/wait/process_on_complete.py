@@ -14,7 +14,10 @@ async def main():
         ]
 
         while pending:
-            done, pending = await asyncio.wait(pending, return_when=asyncio.FIRST_COMPLETED)
+            done, pending = await asyncio.wait(
+                pending,
+                return_when=asyncio.FIRST_COMPLETED
+            )
 
             print(f'Done task count: {len(done)}')
             print(f'Pending task count: {len(pending)}')
@@ -23,4 +26,5 @@ async def main():
                 print(done_task.result())
 
 
-asyncio.run(main())
+if __name__ == '__main__':
+    asyncio.run(main())
