@@ -11,8 +11,6 @@ async def main():
         good_request = fetch_status(session, "https://www.google.com")
         bad_request = fetch_status(session, "invalid_url")
 
-        # by default, we are using return_when = asyncio.ALL_COMPLETED.
-        # the pending set will always be empty
         done, pending = await asyncio.wait([
             asyncio.create_task(good_request),
             asyncio.create_task(bad_request)
@@ -25,7 +23,10 @@ async def main():
             if done_task.exception() is None:
                 print(done_task.result())
             else:
-                logging.error("Request got an exception", exc_info=done_task.exception())
+                logging.error(
+                    "Request got an exception",
+                    exc_info=done_task.exception()
+                )
 
 
 asyncio.run(main())
