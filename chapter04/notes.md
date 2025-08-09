@@ -3,6 +3,7 @@
 3. How to handle errors in some tasks?
 
 gather
+- deterministic result order
 - must wait for all coroutines to finish before processing the results
 - can't cancel other tasks if one throws an exception
 

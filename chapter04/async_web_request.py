@@ -13,7 +13,7 @@ async def fetch_status(session: ClientSession,
         return result.status
     
 
-@async_timed()
+@async_timed
 async def main():
     async with aiohttp.ClientSession() as session:
         url = 'https://www.google.com'
