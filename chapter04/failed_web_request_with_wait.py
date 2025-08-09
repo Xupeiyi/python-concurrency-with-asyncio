@@ -11,6 +11,8 @@ async def main():
         good_request = fetch_status(session, "https://www.google.com")
         bad_request = fetch_status(session, "invalid_url")
 
+        # by default, we are using return_when = asyncio.ALL_COMPLETED.
+        # the pending set will always be empty
         done, pending = await asyncio.wait([
             asyncio.create_task(good_request),
             asyncio.create_task(bad_request)
