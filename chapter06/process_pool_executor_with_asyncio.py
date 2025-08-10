@@ -15,7 +15,7 @@ async def main():
     with ProcessPoolExecutor() as executor:
         loop: AbstractEventLoop = asyncio.get_running_loop()
         nums = [100000000, 10000000, 3, 5, 1, 3, 5]
-        calls: list[partial[int]] = [partial(count, num) for num in nums]
+        calls: list[partial[int]] = [partial(count, to=num) for num in nums]
         coros = [loop.run_in_executor(executor, call) for call in calls]
 
         for result in asyncio.as_completed(coros):
