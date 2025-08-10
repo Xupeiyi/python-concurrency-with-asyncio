@@ -2,6 +2,7 @@ import asyncio
 import concurrent.futures
 import time
 from collections import defaultdict
+from typing import DefaultDict
 import functools
 from multiprocessing import Value
 
@@ -19,7 +20,7 @@ def partition(data: list, chunk_size: int) -> list:
         yield data[i: i + chunk_size]
 
 
-def map_frequencies(chunk: list[str]) -> dict[str, int]:
+def map_frequencies(chunk: list[str]) -> DefaultDict[str, int]:
     counter = defaultdict(int)
     for line in chunk:
         word, _, count, _ = line.split('\t')
@@ -31,7 +32,7 @@ def map_frequencies(chunk: list[str]) -> dict[str, int]:
     return counter
 
 
-def merge_dictionaries(first: dict[str, int], second: dict[str, int]) -> dict[str, int]:
+def merge_dictionaries(first: DefaultDict[str, int], second: DefaultDict[str, int]) -> DefaultDict[str, int]:
     merged = first
     for key, value in second.items():
         merged[key] += value
@@ -82,8 +83,8 @@ async def main(partition_size: int):
 
             await reporter
 
-            final_result = functools.reduce(merge_dictionaries, intermediate_results)
-            # final_result = await reduce(loop, executor, intermediate_results, chunk_size=1500)
+            # final_result = functools.reduce(merge_dictionaries, intermediate_results)
+            final_result = await reduce(loop, executor, intermediate_results, chunk_size=1500)
 
             print(f'Aardvark has appeard {final_result["Aardvark"]} times.')
 
