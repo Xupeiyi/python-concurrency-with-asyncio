@@ -57,9 +57,9 @@ async def reduce(loop, executor, frequencies_list, chunk_size) -> Frequencies:
     return merge_frequencies(frequencies_list)
 
 
-async def progress_reporter(total_partitions: int):
-    while map_progress.value < total_partitions:
-        print(f'Finished {map_progress.value} / {total_partitions} map operations')
+async def progress_reporter(n_partitions: int):
+    while map_progress.value < n_partitions:
+        print(f'Finished {map_progress.value} / {n_partitions} map operations')
         await asyncio.sleep(1)
 
 
@@ -68,36 +68,31 @@ async def main(partition_size: int):
 
     with open('googlebooks-eng-all-1gram-20120701-a', encoding='utf-8') as f:
         lines = f.readlines()
-        print(len(lines))
+    print(len(lines))
 
-        loop = asyncio.get_running_loop()
-        map_progress = Value('i', 0)
+    loop = asyncio.get_running_loop()
+    map_progress = Value('i', 0)
+    with concurrent.futures.ProcessPoolExecutor(initializer=init, initargs=(map_progress,)) as executor:
+        start = time.time()
 
-        with concurrent.futures.ProcessPoolExecutor(
-            initializer=init,
-            initargs=(map_progress,)
-        ) as executor:
-            start = time.time()
+        # 1. Map
+        n_partitions = len(lines) // partition_size
+        reporter = asyncio.create_task(progress_reporter(n_partitions))
+        tasks = []
+        for chunk in partition(lines, partition_size):
+            count_frequencies_in_chunk = functools.partial(count_frequencies, chunk)
+            task = loop.run_in_executor(executor, count_frequencies_in_chunk)
+            tasks.append(task)
+        frequencies_list = await asyncio.gather(*tasks)
+        await reporter
 
-            n_partitions = len(lines) // partition_size
-            reporter = asyncio.create_task(progress_reporter(n_partitions))
+        # 2. Reduce
+        # frequencies = merge_frequencies(frequencies_list)
+        frequencies = await reduce(loop, executor, frequencies_list, chunk_size=1500)
+        print(f'Aardvark has appeard {frequencies["Aardvark"]} times.')
 
-            tasks = []
-            for chunk in partition(lines, partition_size):
-                count_frequencies_in_chunk = functools.partial(count_frequencies, chunk)
-                task = loop.run_in_executor(executor, count_frequencies_in_chunk)
-                tasks.append(task)
-            frequencies_list = await asyncio.gather(*tasks)
-
-            await reporter
-
-            # frequencies = merge_frequencies(frequencies_list)
-            frequencies = await reduce(loop, executor, frequencies_list, chunk_size=1500)
-
-            print(f'Aardvark has appeard {frequencies["Aardvark"]} times.')
-
-            end = time.time()
-            print(f"Time taken to process the file: {end - start} seconds")
+        end = time.time()
+        print(f"Time taken to process the file: {end - start} seconds")
 
 
 if __name__ == "__main__":
