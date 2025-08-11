@@ -6,15 +6,18 @@ from typing import DefaultDict, TypeAlias
 import functools
 from multiprocessing import Value
 
-
-map_progress: Value
+# We can't define count_progress = Value('i',0) here
+# because when each process is created, the script we create
+# it from is run again per each process.
+# This means each script will recreate count_progress.
+count_progress: Value
 
 Frequencies: TypeAlias = DefaultDict[str, int]
 
 
 def init(progress: Value):
-    global map_progress
-    map_progress = progress
+    global count_progress
+    count_progress = progress
 
 
 def partition(data: list, chunk_size: int) -> list:
@@ -28,8 +31,8 @@ def count_frequencies(lines: list[str]) -> Frequencies:
         word, _, count, _ = line.split('\t')
         frequencies[word] += int(count)
 
-    with map_progress.get_lock():
-        map_progress.value += 1
+    with count_progress.get_lock():
+        count_progress.value += 1
 
     return frequencies
 
@@ -58,21 +61,21 @@ async def reduce(loop, executor, frequencies_list, chunk_size) -> Frequencies:
 
 
 async def progress_reporter(n_partitions: int):
-    while map_progress.value < n_partitions:
-        print(f'Finished {map_progress.value} / {n_partitions} map operations')
+    while count_progress.value < n_partitions:
+        print(f'Finished {count_progress.value} / {n_partitions} map operations')
         await asyncio.sleep(1)
 
 
 async def main(partition_size: int):
-    global map_progress
+    global count_progress
 
     with open('googlebooks-eng-all-1gram-20120701-a', encoding='utf-8') as f:
         lines = f.readlines()
     print(len(lines))
 
     loop = asyncio.get_running_loop()
-    map_progress = Value('i', 0)
-    with concurrent.futures.ProcessPoolExecutor(initializer=init, initargs=(map_progress,)) as executor:
+    count_progress = Value('i', 0)
+    with concurrent.futures.ProcessPoolExecutor(initializer=init, initargs=(count_progress,)) as executor:
         start = time.time()
 
         # 1. Map
