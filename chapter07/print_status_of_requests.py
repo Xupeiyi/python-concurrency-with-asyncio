@@ -27,14 +27,22 @@ async def reporter(request_count: int):
 @async_timed
 async def main():
     loop = asyncio.get_running_loop()
-    with ThreadPoolExecutor(32) as pool:
-        request_count = 100
+
+    request_count = 20
+    reporter_task = asyncio.create_task(reporter(request_count))
+
+    with ThreadPoolExecutor() as executor:
         urls = ['https://google.com' for _ in range(request_count)]
-        reporter_task = asyncio.create_task(reporter(request_count))
-        tasks = [loop.run_in_executor(pool, functools.partial(get_status_code, url)) for url in urls]
+        tasks = []
+        for url in urls:
+            get_status_code_of_url = functools.partial(get_status_code, url)
+            task = loop.run_in_executor(executor, get_status_code_of_url)
+            tasks.append(task)
         results = await asyncio.gather(*tasks)
-        await reporter_task
-        print(results)
+
+    await reporter_task
+    print(results)
 
 
-asyncio.run(main())
+if __name__ == '__main__':
+    asyncio.run(main())
