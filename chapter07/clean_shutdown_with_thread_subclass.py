@@ -26,6 +26,7 @@ class ClientEchoThread(Thread):
         
     def close(self):
         # if the run() method is still running
+        # the run() method won't be running if the client has already closed the connection
         if self.is_alive():
             self.connected_socket.sendall("Shutting down!\n".encode())
             # shutdown for read and write
