@@ -4,7 +4,7 @@ from threading import RLock
 class IntListThreadsafe:
 
     def __init__(self, wrapped_list: list[int]):
-        self._lock = RLock()
+        self._lock = RLock()  # this is a reentrant lock
         self._inner_list = wrapped_list
 
     def indices_of(self, to_find: int) -> list[int]:
@@ -13,6 +13,7 @@ class IntListThreadsafe:
 
     def find_and_replace(self, to_find: int, replace_with: int) -> None:
         with self._lock:
+            # self.indices_of need to acquire the same lock again from the same thread
             for index in self.indices_of(to_find):
                 self._inner_list[index] = replace_with
 
