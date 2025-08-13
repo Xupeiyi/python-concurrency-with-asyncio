@@ -1,7 +1,7 @@
 import asyncio
 from asyncio import AbstractEventLoop
 from threading import Thread
-from chapter07.load_tester_gui import LoadTester
+from chapter07.gui_with_asyncio.load_tester_gui import LoadTester
 
 
 class ThreadedEventLoop(Thread):

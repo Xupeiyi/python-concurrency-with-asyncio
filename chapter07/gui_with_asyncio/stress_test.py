@@ -12,13 +12,15 @@ class StressTest:
                  url: str,
                  total_requests: int,
                  callback: Callable[[int, int], None]):
-        self._completed_requests: int = 0
-        self._load_test_future: Optional[Future] = None
         self._loop = loop
         self._url = url
         self._total_requests = total_requests
         self._callback = callback  # need to be thread safe
         self._refresh_rate = 10
+
+        # internal states
+        self._load_test_future: Optional[Future] = None
+        self._completed_requests: int = 0
 
     def start(self):
         future = asyncio.run_coroutine_threadsafe(self._make_requests(), self._loop)
@@ -34,6 +36,8 @@ class StressTest:
         except Exception as e:
             print(e)
 
+        # not using any lock here when updating the progress
+        # because this happens in an event loop that runs on a single thread
         self._completed_requests = self._completed_requests + 1
 
         if (self._completed_requests % self._refresh_rate == 0

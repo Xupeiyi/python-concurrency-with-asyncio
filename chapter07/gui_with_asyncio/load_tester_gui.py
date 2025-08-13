@@ -4,7 +4,7 @@ from tkinter import Label
 from tkinter import Entry
 from tkinter import ttk
 from typing import Optional
-from .stress_test import StressTest
+from chapter07.gui_with_asyncio.stress_test import StressTest
 
 
 class LoadTester(Tk):
