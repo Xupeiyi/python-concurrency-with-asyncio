@@ -6,9 +6,11 @@ from chapter07.gui_with_asyncio.load_tester_gui import LoadTester
 
 class ThreadedEventLoop(Thread):
 
-    def __init__(self, loop: AbstractEventLoop):
+    def __init__(self, event_loop: AbstractEventLoop):
         super().__init__()
-        self._loop = loop
+        self._loop = event_loop
+
+        # automatically finished when the main thread for the GUI APP has finished
         self.daemon = True
 
     def run(self):

@@ -11,22 +11,21 @@ class LoadTester(Tk):
 
     def __init__(self, loop, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
-        self._queue = Queue()
+        self._loop = loop
+
+        self._queue = Queue()  # Queue() is thread safe
         self._refresh_ms = 25
 
-        self._loop = loop
         self._load_test: Optional[StressTest] = None
         self.title('URL Requester')
 
         self._url_label = Label(self, text="URL:")
         self._url_label.grid(column=0, row=0)
-
         self._url_field = Entry(self, width=10)
         self._url_field.grid(column=1, row=0)
 
         self._request_label = Label(self, text="Number of requests:")
         self._request_label.grid(column=0, row=1)
-
         self._request_field = Entry(self, width=10)
         self._request_field.grid(column=1, row=1)
 
@@ -35,7 +34,6 @@ class LoadTester(Tk):
 
         self._pb_label = Label(self, text="Progress:")
         self._pb_label.grid(column=0, row=3)
-
         self._pb = ttk.Progressbar(self, orient="horizontal", length=150, mode="determinate", maximum=100)
         self._pb.grid(column=1, row=3, columnspan=2)
 
