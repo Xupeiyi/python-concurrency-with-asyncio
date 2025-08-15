@@ -28,6 +28,8 @@ async def main():
             tasks.append(loop.run_in_executor(pool, calc_row_i_mean))
 
         results = await asyncio.gather(*tasks)
+    return results
 
 
-asyncio.run(main())
+if __name__ == '__main__':
+    asyncio.run(main())
