@@ -1,7 +1,7 @@
+import os
 import asyncio
 import functools
 import hashlib
-import os
 from concurrent.futures.thread import ThreadPoolExecutor
 import random
 import string
@@ -27,16 +27,15 @@ async def main():
     loop = asyncio.get_running_loop()
 
     with ThreadPoolExecutor() as pool:
+
         tasks = []
         for password in passwords:
-            tasks.append(
-                loop.run_in_executor(
-                    pool,
-                    functools.partial(hash, password)
-                )
-            )
+            hash_password = functools.partial(hash, password)
+            task = loop.run_in_executor(pool, hash_password)
+            tasks.append(task)
 
         await asyncio.gather(*tasks)
 
 
-asyncio.run(main())
+if __name__ == '__main__':
+    asyncio.run(main())
