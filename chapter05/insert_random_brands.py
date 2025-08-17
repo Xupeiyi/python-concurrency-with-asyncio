@@ -28,4 +28,5 @@ async def main():
     await insert_brands(common_words, connection)
 
 
-asyncio.run(main())
+if __name__ == '__main__':
+    asyncio.run(main())
