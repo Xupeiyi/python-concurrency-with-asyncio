@@ -70,6 +70,31 @@ async def get_product(request: Request) -> Response:
         raise web.HTTPBadRequest()
 
 
+@routes.post('/product')
+async def create_product(request: Request) -> Response:
+    product_name = 'product_name'
+    brand_id = 'brand_id'
+
+    if not request.can_read_body:
+        raise web.HTTPBadRequest()
+
+    body = await request.json()
+
+    if product_name in body and brand_id in body:
+        db = request.app[DB_KEY]
+        await db.execute(
+            """
+            INSERT INTO 
+            product(product_id, product_name, brand_id) 
+            VALUES(DEFAULT, $1, $2)
+            """,
+            body[product_name], int(body[brand_id])
+        )
+        return web.Response(status=201)
+    else:
+        raise web.HTTPBadRequest()
+
+
 app = web.Application()
 app.on_startup.append(create_database_pool)
 app.on_cleanup.append(destroy_database_pool)
