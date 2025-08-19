@@ -75,6 +75,7 @@ async def create_product(request: Request) -> Response:
     product_name = 'product_name'
     brand_id = 'brand_id'
 
+    # check if the request has a body
     if not request.can_read_body:
         raise web.HTTPBadRequest()
 
